@@ -1,0 +1,104 @@
+ackage main
+
+import "fmt"
+
+const NMAX = 100
+
+type pegawai struct {
+	name             string
+	id, lama, jb, jc int
+}
+type arrayPegawai [NMAX - 1]pegawai
+
+func addNPeg(AP *arrayPegawai) {
+	var bonus, jumData int
+	bonus = 0
+	fmt.Println("Jumlah Data:")
+	fmt.Scan(jumData)
+	for i := 0; i < jumData; i++ {
+		fmt.Println("ID:")
+		fmt.Scanln(AP[i].id)
+		fmt.Println("Nama:")
+		fmt.Scanln(AP[i].name)
+		fmt.Println("Lama Bekerja:")
+		fmt.Scanln(AP[i].lama)
+		fmt.Println("Jumlah komplain:")
+		fmt.Scanln(AP[i].jc)
+		if AP[i].lama >= 10 {
+			bonus = bonus + 1000000*AP[i].lama
+		}
+		if AP[i].jc < 10 {
+			bonus = bonus + 10000000
+		}
+		AP[i].jb = bonus
+		fmt.Println("Jumlah bonus:", bonus)
+	}
+}
+
+func sort(AP *arrayPegawai, N int) {
+	//mengurutkan data dari terbesar ke terkecil menggunakan selection sort//
+	var pass, idx, i int
+	var temp pegawai
+	pass = 1
+	for pass < N {
+		idx = pass - 1
+		i = pass
+		for i < N {
+			if AP[idx].id < AP[i].id {
+				idx = i
+			}
+			i++
+		}
+		temp = AP[pass-1]
+		AP[pass-1] = AP[idx]
+		AP[idx] = temp
+		pass++
+	}
+}
+
+func cariData(AP arrayPegawai, N int, IDPeg int) int {
+	//mencari data menggunakan sequential search//
+	var posisi int
+	posisi = 0
+	for posisi < N && AP[posisi].id != IDPeg {
+		posisi++
+	}
+	//cek posisi jika elemen yang dicari ditemukan//
+	if posisi == N {
+		return -1
+	} else {
+		return posisi
+	}
+}
+
+func totalKomplain(AP arrayPegawai, N int) int {
+	//mengembalikan total komplain dari N pegawai yang ada di Array pegawai//
+	var total int
+	total = 0
+	for i := 0; i < N; i++ {
+		total = total + AP[i].jc
+	}
+	return total
+}
+
+func main() {
+	var Ap arrayPegawai
+	var idPeg, ketemu int
+	var rata2 float64
+	//pemanggilan fungsi untuk menambah data dan mengurutkan data//
+	addNPeg(&Ap)
+	sort(&Ap, NMAX)
+	//selanjutnya menampilkan rata-rata komplain dari N pegawai//
+	rata2 = float64(totalKomplain(Ap, NMAX)) / float64(NMAX)
+	fmt.Println("Rata-rata:", rata2)
+	//menghapus data dengan mencari data terlebih dahulu//
+	ketemu = cariData(Ap, NMAX, idPeg)
+	//menimpa data array yang dihapus dengan data array setelahnya//
+	if ketemu == -1 {
+		fmt.Println("Data tidak ditemukan.")
+	} else {
+		for i := ketemu; i < NMAX; i++ {
+			Ap[i+1] = Ap[i]
+		}
+	}
+}
